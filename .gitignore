@@ -1,0 +1,14 @@
+# Mac stuffs
+.DS_Store
+*/.DS_Store
+**/*/.DS_Store
+
+# Webstorm stuffs
+.idea
+*/.idea
+**/*/.idea
+
+# Bower dependencies
+bower_components
+*/bower_components
+**/*/bower_components

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Angular Scroll Test</title>
+    <style>
+        .ax-scroll{
+            padding:20px;
+            max-width:200px;
+            border:1px solid #ccc;
+            background-color:deepSkyBlue;
+            max-height:200px;
+            overflow:scroll;
+        }
+
+        .content{
+            height:600px;
+            background-color:pink;
+        }
+    </style>
+</head>
+<body ng-app="scroll">
+
+    <div ng-controller="TestCtrl as ctrl">
+        <strong>Scroll = </strong>{{ctrl.scroll}}
+        <div ax-scroll="ctrl.testFn($val)" exact>
+            <div class="content"></div>
+        </div>
+    </div>
+
+    <script src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript">
+        (function (angular) {
+            function scrollDirective ($parse) {
+                return {
+                    compile: function ($element, $attrs) {
+                        $element.addClass('ax-scroll');
+                        return function scrollLink (scope, elem, attrs) {
+                            var node = elem[0],
+                                axScrollParsed = $parse(attrs.axScroll);
+                            node.addEventListener('scroll', onScroll);
+                            function onScroll (event) {
+                                var target = event.target;
+                                scope.$apply(function () {
+                                    axScrollParsed(scope, {
+                                        $val: target.scrollTop / (target.scrollHeight - target.clientHeight)
+                                    });
+                                })
+                            }
+                            scope.$on('$destroy', function () {
+                                node.removeEventListener('scroll', onScroll);
+                            });
+                        }
+                    }
+                }
+
+
+            }
+
+            angular
+                    .module('scroll', [])
+                    .directive('axScroll', scrollDirective)
+                    .controller('TestCtrl', function () {
+                        this.scroll = 0;
+                        this.testFn = function (value) {
+                            this.scroll = value;
+                        }
+                    });
+
+        }(angular))
+
+    </script>
+</body>
+</html>
