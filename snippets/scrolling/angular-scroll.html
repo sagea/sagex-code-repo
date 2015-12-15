@@ -32,29 +32,19 @@
     <script type="text/javascript">
         (function (angular) {
             function scrollDirective ($parse) {
-                return {
-                    compile: function ($element, $attrs) {
-                        $element.addClass('ax-scroll');
-                        return function scrollLink (scope, elem, attrs) {
-                            var node = elem[0],
-                                axScrollParsed = $parse(attrs.axScroll);
-                            node.addEventListener('scroll', onScroll);
-                            function onScroll (event) {
-                                var target = event.target;
-                                scope.$apply(function () {
-                                    axScrollParsed(scope, {
-                                        $val: target.scrollTop / (target.scrollHeight - target.clientHeight)
-                                    });
-                                })
-                            }
-                            scope.$on('$destroy', function () {
-                                node.removeEventListener('scroll', onScroll);
+                return function (scope, elem, attrs) {
+                    var axScrollParsed = $parse(attrs.axScroll);
+                    elem.on('scroll', onScroll);
+                    
+                    function onScroll (event) {
+                        var target = event.target;
+                        scope.$evalAsync(function () {
+                            axScrollParsed(scope, {
+                                $val: target.scrollTop / (target.scrollHeight - target.clientHeight)
                             });
-                        }
+                        })
                     }
                 }
-
-
             }
 
             angular
